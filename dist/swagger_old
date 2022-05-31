@@ -1,0 +1,109 @@
+openapi: 3.0.3
+info:
+  title: Periode Api
+  description: The api for periode
+  version: 0.1.9
+servers:
+  - url: http://api.example.com/v1
+    description: Optional server description, e.g. Main (production) server
+  - url: http://staging-api.example.com
+    description: Optional server description, e.g. Internal staging server for testing
+paths:
+  /<<merchant_defined_url>>:
+    post:
+      summary: Payment data posted to merchant on successfull payment.
+      description: tbd
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                paymentData:
+                  type: object
+                  properties:
+                    productName:
+                      type: string
+                    productId:
+                      type: string
+                    productDecription:
+                      type: string
+                    customerId:
+                      type: string
+                    periodeCusotmerId:
+                      type: string
+                    subscriptionStatus:
+                      type: string
+                      enum: [ACTIVE, STOPPED]
+                    customer:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        phone:
+                          type: string
+                        email:
+                          type: string
+                        address:
+                          type: object
+                          properties:
+                            city:
+                              type: string
+                            postalCode:
+                              type: string
+                            street:
+                              type: string
+                        items:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                              description:
+                                type: string
+                              amount:
+                                type: integer
+                              type:
+                                type: string
+                                enum: [checkbox, radiobutton, baseItem]
+                        totalAmount:
+                          type: integer
+                        currency:
+                          type: string
+                          enum: [NOK]
+                        refundedAmount:
+                          type: integer
+                        failureReason:
+                          type: string
+                        failureDecription:
+                          type: string
+            example:
+              paymentData:
+                productName: Naf
+                productId: 123XDGDF
+                productDescription: Naf sykkelregister
+                cusromerId: some_naf_id
+                periodeCustomerId: DSFCSDF112
+                subscriptionStatus: ACTIVE
+                customer:
+                  name: Aksel Stdler
+                  phone: 4147377
+                  email: aksels@stadler.no
+                address:
+                  city: oslo
+                  postalcode: 0650
+                  street: jens bjelkes gate 6
+                items:
+                  [{type: baseItem, amount: 29900, description: naf sykkelregister}, {type: checkbox, description: naf veihjelp, amount: 59900, id: dsfdsf}, {type: radioButton, id: 1213213, description: 8 bikes, amount: 9900}]
+                currency: NOK
+                totalAmount: 87000
+                  
+                
+                  
+                              
+                      
+      responses:
+        '200':    # status code
+          description: A JSON array of user names

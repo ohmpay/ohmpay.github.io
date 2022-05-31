@@ -1,0 +1,258 @@
+openapi: 3.0.3
+info:
+  title: Periode Api
+  description: The API for customers who want create their own UI, but still use Period as a payment machine.
+  version: 0.0.1
+servers:
+  - url: https://minside.periode.no
+    description: The url for the end-user exposed part of periode
+  - url: http://merchant.periode.no
+    description: The url of the merchant exposed part of periode
+
+
+paths:
+  minside.periode.nosignup/{productId}:
+    get:
+      summary: Get the signup page for the product
+      decription: Query parameters can be used to prefill and auto submit
+      parameters:
+        - in: path
+          name: productId
+          schema:
+                type: integer      
+
+          description: The unique id of this product
+        - in: query
+          name: merchant_customer_id
+          schema:
+            type: string
+          description: The id you have for the customer in your system
+
+        - in: query
+          name: email
+          schema:
+            type: string
+          description: The email you have for the customer in your system
+        - in: query
+          name: radio_button_index
+          schema:
+            type: integer
+          description: The index of the checked radio button, where 0 is the first
+        - in: query
+          name: checkbox_indexes
+          schema:
+            type: string
+          description: The indexes of the checked checboxes, separatet by comma
+        - in: query
+          name: payment_method_type
+          schema:
+            type: string
+            enum: [VIPPS, STRIPE]
+          description: The payment method to use
+        - in: query
+          name: auto_submit
+          schema:
+            type: boolean
+          description: Whether periode should redirect the customer directly to stripe/vipps for payments 
+  
+  merchant.periode.no/subscriptions/:
+    get:
+      summary: Get the signup page for the product
+      decription: Query parameters can be used to prefill and auto submit
+      parameters:
+        - in: header
+          name: shared_secret
+          schema:
+            type: string
+          required: true      
+          description: The shared secret between the merchant and periode. Be sure to validate this else a malicious actor can post payments into your system
+
+        - in: query
+          name: merchant_id
+          schema:
+                type: string
+          description: Your merchant id at periode. You can find it on the homescreen when logged in
+          required: true
+      
+        - in: query
+          name: merchant_customer_id
+          schema:
+            type: string
+          description: filter on a specific customer
+        - in: query
+          name: product_id
+          schema:
+            type: string
+          description: filter on a specific product
+
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/subscription'
+
+  merchant.periode.no/subscriptions/{id}:
+    get:
+      summary: Get the signup page for the product
+      decription: Query parameters can be used to prefill and auto submit
+      parameters:
+        - in: header
+          name: shared_secret
+          schema:
+            type: string
+          required: true      
+          description: The shared secret between the merchant and periode. Be sure to validate this else a malicious actor can post payments into your system
+        
+        - in: path
+          name: id
+          schema:
+            type: string
+          description: The id of the subscription
+
+        - in: query
+          name: merchant_id
+          schema:
+                type: string
+          description: Your merchant id at periode. You can find it on the homescreen when logged in
+          required: true
+
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/subscription'
+
+       
+  /<<merchant_defined_url>>:
+    post:
+      summary: Payment data posted to merchant on successfull payment.
+      parameters:
+        - in: header
+          name: shared_secret
+          schema:
+            type: string
+          required: true      
+          description: The shared secret between the merchant and periode. Be sure to validate this else a malicious actor can post payments into your system
+      
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/subscription'
+      responses:
+        '200':
+          description:  ok# status code
+components:
+  schemas:
+    subscription:
+      type: object
+      properties:
+        productName:
+          type: string
+        productId:
+          type: string
+        productDecription:
+          type: string
+        merchantCustomerId:
+          type: string
+        periodeCustomerId:
+          type: string
+        subscriptionStatus:
+          type: string
+          enum: [ACTIVE, STOPPED]
+        chargeLog:
+          type: array
+          items:
+            type: object
+            properties:
+              customer:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  phone:
+                    type: string
+                  email:
+                    type: string
+              address:
+                type: object
+                properties:
+                  city:
+                    type: string
+                  postalCode:
+                    type: string
+                  street:
+                    type: string
+              items:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    description:
+                      type: string
+                    amount:
+                      type: integer
+                    type:
+                      type: string
+                      enum: [checkbox, radioButton, baseItem]
+                
+              charge:
+                type: object
+                properties:
+                  paymentType:
+                    type: string
+                    enum: [VIPPS, STRIPE]
+                  chargeType:
+                    type: string
+                    enum: [Recurring, extraCharge]
+                  chargeId: 
+                    type: string
+                  paymentIntentId:
+                    type: string
+                  amount:
+                    type: integer
+                  chargeDate:
+                    type: string
+                  isInitialCharge:
+                    type: boolean
+                  currency:
+                    type: string
+                    enum: [NOK]
+                  refundedAmount:
+                    type: integer
+                  failureReason:
+                    type: string
+                  failureDecription:
+                    type: string
+                  status:
+                    type: string
+                    enum: [CHARGED, REFUNDEND, FAILED. CANCELLED, PARTIALLY_REFUNDED]
+      example:
+        productName: Naf
+        productId: 123XDGDF
+        productDescription: Naf sykkelregister
+        merchantCustomerId: some_naf_id
+        periodeCustomerId: DSFCSDF112
+        subscriptionStatus: ACTIVE
+        chargeLog:
+        - customer:
+            name: Aksel Stdler
+            phone: 4147377
+            email: aksels@stadler.no
+          chargeType: Recurring
+          address:
+            city: oslo
+            postalcode: 0650
+            street: jens bjelkes gate 6
+          items:
+            [{type: baseItem, amount: 29900}, {type: checkbox, description: naf veihjelp, amount: 59900, id: dsfdsf}, {type: radioButton, id: 1213213, description: 8 bikes, amount: 9900}]
+          charge:  {type: VIPPS, chargeDate: "2022-05-15", isInitialCharge: true, status: CHARGED, chargeId:  chr-234, currency: NOK, totalAmount: 87000}
