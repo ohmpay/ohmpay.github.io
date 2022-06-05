@@ -1,7 +1,21 @@
 openapi: 3.0.3
 info:
   title: Periode Api
-  description: The API for customers who want create their own UI, but still use Period as a payment machine.
+  description: > 
+    The API for customers who want create their own UI, but still use Period as a payment machine.
+    The poeple wanting to integrate with this API are called merchants in this text
+    
+    Step by step
+    1. Merchant () signs up at periode.no  https://periode.no/bli-kunde
+    2. Merchant creates a product in periodes UI portal and receives their unique periode url for initiating a purchase
+    3. Merchant creates a purchase flow and redirects to this URL.
+      a. Without query params the customer will fill in requierd information in Periodes UI
+      b. If the customer wants to own the UI the customer can be redirected with all requierd info as query params
+    4. Customer is redirected to Vipps or Stripe for payment
+    5. On success Periode sends a POST call to merchant defined endpoint. 
+    6. Merchant returns 200 OK, on which periode redirects the customer to the merchants site
+    7. Optional. Merchant polls /subscriptions endpoint to ensure all charges are accounted for (in case of donwtime during webhook calls)
+     
   version: 0.0.1
 servers:
   - url: https://minside.periode.no
@@ -11,7 +25,7 @@ servers:
 
 
 paths:
-  minside.periode.nosignup/{productId}:
+  minside.periode.no/signup/{productId}:
     get:
       summary: Get the signup page for the product
       decription: Query parameters can be used to prefill and auto submit
