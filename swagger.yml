@@ -4,17 +4,28 @@ info:
   description: > 
     The API for customers who want create their own UI, but still use Period as a payment machine.
     The poeple wanting to integrate with this API are called merchants in this text
-    
+    </br>
+ 
     Step by step
-    1. Merchant () signs up at periode.no  https://periode.no/bli-kunde
-    2. Merchant creates a product in periodes UI portal and receives their unique periode url for initiating a purchase
-    3. Merchant creates a purchase flow and redirects to this URL.
-      a. Without query params the customer will fill in requierd information in Periodes UI
-      b. If the customer wants to own the UI the customer can be redirected with all requierd info as query params
-    4. Customer is redirected to Vipps or Stripe for payment
-    5. On success Periode sends a POST call to merchant defined endpoint. 
-    6. Merchant returns 200 OK, on which periode redirects the customer to the merchants site
-    7. Optional. Merchant polls /subscriptions endpoint to ensure all charges are accounted for (in case of donwtime during webhook calls)
+        </br>
+    1. Merchant () signs up at periode.no  https://periode.no/bli-kunde     </br>
+
+    2. Merchant creates a product in periodes UI portal and receives their unique periode url for initiating a purchase     </br>
+
+    3. Merchant creates a purchase flow and redirects to this URL.     </br>
+
+         a. Without query params the customer will fill in requierd information in Periodes UI     </br>
+
+         b. If the customer wants to own the UI the customer can be redirected with all requierd info as query params     </br>
+
+    4. Customer is redirected to Vipps or Stripe for payment     </br>
+
+    5. On success Periode sends a POST call to merchant defined endpoint.     </br>
+
+    6. Merchant returns 200 OK, on which periode redirects the customer to the merchants site     </br>
+
+    7. Optional. Merchant polls /subscriptions endpoint to ensure all charges are accounted for (in case of donwtime during webhook calls)     </br>
+
      
   version: 0.0.1
 servers:
