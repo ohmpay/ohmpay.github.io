@@ -291,10 +291,13 @@ components:
         
         
         
-        chargeLog:
-          items:
-            [{type: baseItem, amount: 29900}, {type: checkbox, description: naf veihjelp, amount: 59900, id: dsfdsf}, {type: radioButton, id: 1213213, description: 8 bikes, amount: 9900}]
-          id: 233FD
+        chargeLog: [{
+          items: [{type: baseItem, amount: 29900}, {type: checkbox, description: naf veihjelp, amount: 59900, id: dsfdsf}, {type: radioButton, id: 1213213, description: 8 bikes, amount: 9900}],
+          id: 233FD,
           charge:  {type: VIPPS, 
             chargeType: Recurring,
-            chargeDate: "2022-05-15", isInitialCharge: true, status: CHARGED, currency: NOK, totalAmount: 87000}
+            chargeDate: "2022-05-15", isInitialCharge: true, status: CHARGED, currency: NOK, totalAmount: 87000
+          }
+          }]
+          
+]
