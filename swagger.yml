@@ -179,6 +179,8 @@ components:
     subscription:
       type: object
       properties:
+        subscriptionId:
+          type: string
         productName:
           type: string
         productId:
@@ -275,6 +277,7 @@ components:
         merchantCustomerId: some_naf_id
         periodeCustomerId: DSFCSDF112
         subscriptionStatus: ACTIVE
+        subscriptionId: ASDADS
         customer:
           name: Aksel Stadler
           givenName: Aksel
