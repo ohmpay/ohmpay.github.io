@@ -196,6 +196,10 @@ components:
         customer:
           type: object
           properties:
+            givenName: 
+              type: string
+            familyName: 
+              type: string
             name:
               type: string
             phone:
@@ -272,7 +276,9 @@ components:
         periodeCustomerId: DSFCSDF112
         subscriptionStatus: ACTIVE
         customer:
-          name: Aksel Stdler
+          name: Aksel Stadler
+          givenName: Aksel
+          familyName: Stadler
           phone: 4147377
           email: aksels@stadler.no
           address:
