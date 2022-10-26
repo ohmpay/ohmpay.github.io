@@ -174,8 +174,74 @@ paths:
       responses:
         '200':
           description:  ok# status code
+
+
+  minside.periode.no/single-payment/{merchantId}/{prdouctId}:
+    get:
+      summary: Get the signup page for the product
+      decription: Query parameters can be used for API integrations
+      parameters:
+        - in: path
+          name: productId
+          schema:
+                type: integer      
+
+          description: The unique id of this product
+        - in: query
+          name: merchant_customer_id
+          schema:
+            type: string
+          description: The id you have for the customer in your system
+
+        - in: query
+          name: email
+          schema:
+            type: string
+          description: The email you have for the customer in your system
+        - in: query
+          name: redicer_url
+          schema:
+            type: string
+          description: The url you want to redirect the customer back to after payment
+  
+  /<<single_payment merchant_defined_url>>:
+    post:
+      summary: single Payment data posted to merchant on successfull payment.
+      parameters:
+        - in: header
+          name: shared_secret
+          schema:
+            type: string
+          required: true      
+          description: The shared secret between the merchant and periode. Be sure to validate this else a malicious actor can post payments into your system
+      
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/singlePayment'
+      responses:
+        '200':
+          description:  ok# status code
+  
 components:
   schemas:
+    singlePayment:
+      type: object
+      properties:
+        productName:
+          type: string
+        productId:
+          type: string
+        productDecription:
+          type: string
+        merchantCustomerId:
+          type: string
+        status:
+          type: string
+          enum: [PAID]
+
     subscription:
       type: object
       properties:
