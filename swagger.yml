@@ -29,30 +29,37 @@ info:
      
   version: 0.0.1
 servers:
-  - url: https://minside.periode.no
-    description: The url for the end-user exposed part of periode
-  - url: http://merchant.periode.no
+  - url: https://europe-west1-periode-prod.cloudfunctions.net/
     description: The url of the merchant exposed part of periode
 
 
 paths:
-  minside.periode.no/signup/{productId}:
+  /minside.periode.no/signup/{productId}:
     get:
       summary: Get the signup page for the product
-      decription: Query parameters can be used to prefill and auto submit
       parameters:
         - in: path
           name: productId
           schema:
-                type: integer      
+                type: string
+          required: true
 
           description: The unique id of this product
         - in: query
           name: merchant_customer_id
           schema:
             type: string
-          description: The id you have for the customer in your system
-
+          description: The id you have for the customer in your system (deprecated, use tags instead)
+        - in: query
+          name: redirect_uri
+          schema:
+            type: string
+          description: the uri you want the customer to redirect to after completed payment
+        - in: query
+          name: webhook_uri
+          schema:
+            type: string 
+          description: url encoded uri where you want to receive the backend to backend webhook on subscription state changes
         - in: query
           name: email
           schema:
@@ -79,36 +86,33 @@ paths:
           schema:
             type: boolean
           description: Whether periode should redirect the customer directly to stripe/vipps for payments 
+        - in: query
+          name: tag_*
+          schema:
+            type: string
+          description: Any number of custom tags you want to have on the subscription on the form tag_name=value
+
+      responses:
+        '200':
+          description: Successful response
   
-  merchant.periode.no/subscriptions/:
+  /merchants/{merchant_id}/subscriptions/:
     get:
-      summary: Get the signup page for the product
-      decription: Query parameters can be used to prefill and auto submit
+      summary: Get all subscriptions for this merchant
       parameters:
         - in: header
-          name: shared_secret
+          name: x-api-key
           schema:
             type: string
           required: true      
           description: The shared secret between the merchant and periode. Be sure to validate this else a malicious actor can post payments into your system
 
-        - in: query
+        - in: path
           name: merchant_id
           schema:
-                type: string
-          description: Your merchant id at periode. You can find it on the homescreen when logged in
+            type: string
+          description: The id of the merchant
           required: true
-      
-        - in: query
-          name: merchant_customer_id
-          schema:
-            type: string
-          description: filter on a specific customer
-        - in: query
-          name: product_id
-          schema:
-            type: string
-          description: filter on a specific product
 
       responses:
         '200':
@@ -120,10 +124,9 @@ paths:
                   items:
                     $ref: '#/components/schemas/subscription'
 
-  merchant.periode.no/subscriptions/{id}:
+  /merchants/{merchant_id}/subscriptions/{sub_id}:
     get:
-      summary: Get the signup page for the product
-      decription: Query parameters can be used to prefill and auto submit
+      summary: Get a single subscription by id
       parameters:
         - in: header
           name: shared_secret
@@ -133,17 +136,19 @@ paths:
           description: The shared secret between the merchant and periode. Be sure to validate this else a malicious actor can post payments into your system
         
         - in: path
-          name: id
+          name: merchant_id
+          schema:
+            type: string
+          description: The id of the merchant
+          required: true
+
+        - in: path
+          name: sub_id
           schema:
             type: string
           description: The id of the subscription
-
-        - in: query
-          name: merchant_id
-          schema:
-                type: string
-          description: Your merchant id at periode. You can find it on the homescreen when logged in
           required: true
+
 
       responses:
         '200':
@@ -156,7 +161,7 @@ paths:
        
   /<<merchant_defined_url>>:
     post:
-      summary: Payment data posted to merchant on successfull payment.
+      summary: Payment data posted to merchant on successful payment.
       parameters:
         - in: header
           name: shared_secret
@@ -175,56 +180,6 @@ paths:
         '200':
           description:  ok# status code
 
-
-  minside.periode.no/single-payment/{merchantId}/{prdouctId}:
-    get:
-      summary: Get the signup page for the product
-      decription: Query parameters can be used for API integrations
-      parameters:
-        - in: path
-          name: productId
-          schema:
-                type: integer      
-
-          description: The unique id of this product
-        - in: query
-          name: merchant_customer_id
-          schema:
-            type: string
-          description: The id you have for the customer in your system
-
-        - in: query
-          name: email
-          schema:
-            type: string
-          description: The email you have for the customer in your system
-        - in: query
-          name: redicer_url
-          schema:
-            type: string
-          description: The url you want to redirect the customer back to after payment
-  
-  /<<single_payment merchant_defined_url>>:
-    post:
-      summary: single Payment data posted to merchant on successfull payment.
-      parameters:
-        - in: header
-          name: shared_secret
-          schema:
-            type: string
-          required: true      
-          description: The shared secret between the merchant and periode. Be sure to validate this else a malicious actor can post payments into your system
-      
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/singlePayment'
-      responses:
-        '200':
-          description:  ok# status code
-  
 components:
   schemas:
     singlePayment:
@@ -257,9 +212,14 @@ components:
           type: string
         periodeCustomerId:
           type: string
+        expireAt:
+          type: string
         subscriptionStatus:
           type: string
           enum: [ACTIVE, STOPPED]
+
+        tags:
+          type: object
         
         customer:
           type: object
@@ -303,7 +263,8 @@ components:
           items:
             type: object
             properties:
-              id: string
+              id:
+                type: string
               items:
                 type: array
                 items:
@@ -355,9 +316,13 @@ components:
         productId: 123XDGDF
         productDescription: Naf sykkelregister
         merchantCustomerId: some_naf_id
+        expireAt: 2023-10-02
         periodeCustomerId: DSFCSDF112
         subscriptionStatus: ACTIVE
         subscriptionId: ASDADS
+        tags:
+          customTag: 123
+          ourPaymentRef: 123
         customer:
           name: Aksel Stadler
           givenName: Aksel
