@@ -5,19 +5,22 @@ info:
     The API for customers who want create their own UI, but still use Period as a payment machine.
     The poeple wanting to integrate with this API are called merchants in this text
     </br>
- 
-    Step by step
-        </br>
-    1. Merchant () signs up at periode.no  https://periode.no/bli-kunde     </br>
 
-    2. Merchant creates a product in periodes UI portal and receives their unique periode url for initiating a purchase     </br>
+    Prerequisites:
+    </br>
+    1. Sign up at periode.no  https://periode.no/bli-kunde     </br>
+    2. Merchant creates a product in periodes UI portal and receives their unique periode url for initiating a purchase.  (minside.periode.no/signup/{productId})     </br>
+      2.a (Optional) Add a webhook url to the product so all payments and state changes are POSTED to your server
+    3. 
 
-    3. Merchant creates a purchase flow and redirects to this URL.     </br>
+    I will let Periode manage the UI for letting users signup and stop the agreement: (E.g. users can log into periode)
+    </br>
+
+    3. Merchant creates a purchase flow and redirects minside.periode.no/{productId} .     </br>
 
          a. Without query params the customer will fill in requierd information in Periodes UI     </br>
 
-         b. If the customer wants to own the UI the customer can be redirected with all requierd info as query params     </br>
-
+         b. If the customer wants to own the UI the customer can be redirected with all requierd info as query params  </br>
     4. Customer is redirected to Vipps or Stripe for payment     </br>
 
     5. On success Periode sends a POST call to merchant defined endpoint.     </br>
@@ -26,10 +29,26 @@ info:
 
     7. Optional. Merchant polls /subscriptions endpoint to ensure all charges are accounted for (in case of donwtime during webhook calls)     </br>
 
+    8. End User can login to minside.periode.no to manage their subscription
+
+    I have created my own UI and will only use the Periode API to initiate and stop subscriptions.
+    </br>
+
+    3. Merchant initiates a subscription by posting to /merchant/:merchantId/products/:productId/subscriptions
+
+    4. Periode responds with a vipps payment url that the merchant will redirect  the user to
+
+    5. After successfull payment the users is redirected back to us, we send a webhook to you and
+      redirect the user to your site when you respond 200OK (which is after your database has been updated)
+    <
+
+
      
   version: 0.0.1
 servers:
-  - url: https://europe-west1-periode-prod.cloudfunctions.net/
+  - url: https://europe-west1-periode-prod.cloudfunctions.net/merchantApi
+    description: The url of the merchant exposed part of periode
+  - url: https://europe-west1-periode-test.cloudfunctions.net/merchantApi
     description: The url of the merchant exposed part of periode
 
 
@@ -96,7 +115,7 @@ paths:
         '200':
           description: Successful response
   
-  /merchants/{merchant_id}/subscriptions/:
+  /merchants/{merchantId}/products/{productId}/subscriptions/:
     get:
       summary: Get all subscriptions for this merchant
       parameters:
@@ -108,7 +127,14 @@ paths:
           description: The shared secret between the merchant and periode. Be sure to validate this else a malicious actor can post payments into your system
 
         - in: path
-          name: merchant_id
+          name: merchantId
+          schema:
+            type: string
+          description: The id of the merchant
+          required: true
+          
+        - in: path
+          name: productId
           schema:
             type: string
           description: The id of the merchant
@@ -124,7 +150,7 @@ paths:
                   items:
                     $ref: '#/components/schemas/subscription'
 
-  /merchants/{merchant_id}/subscriptions/{sub_id}:
+  /merchants/{merchantId}/products/{productId}/subscriptions/{subscriptionId}:
     get:
       summary: Get a single subscription by id
       parameters:
@@ -136,20 +162,26 @@ paths:
           description: The shared secret between the merchant and periode. Be sure to validate this else a malicious actor can post payments into your system
         
         - in: path
-          name: merchant_id
+          name: merchantId
           schema:
             type: string
           description: The id of the merchant
           required: true
 
         - in: path
-          name: sub_id
+          name: productId
           schema:
             type: string
           description: The id of the subscription
           required: true
 
-
+        - in: path
+          name: subscriptionId
+          schema:
+            type: string
+          description: The id of the subscription
+          required: true
+      
       responses:
         '200':
           description: OK
@@ -158,6 +190,134 @@ paths:
               schema:
                 $ref: '#/components/schemas/subscription'
 
+
+  /merchants/{merchantId}/products/{productId}/subscriptions:
+    post:
+      summary: Create a draft subscription
+      parameters:
+        - in: header
+          name: shared_secret
+          schema:
+            type: string
+          required: true      
+          description: The shared secret between the merchant and periode. Be sure to validate this else a malicious actor can post payments into your system
+        
+        - in: path
+          name: merchantId
+          schema:
+            type: string
+          description: The id of the merchant
+          required: true
+
+        - in: path
+          name: productId
+          schema:
+            type: string
+          description: The id of the subscription
+          required: true
+      
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createSubscription'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/createSubscriptionResponse'
+                
+
+  /merchants/{merchantId}/products/{productId}/subscriptions/{subscriptionId}/update:
+    put:
+      summary: Update subscription
+      parameters:
+        - in: header
+          name: shared_secret
+          schema:
+            type: string
+          required: true      
+          description: The shared secret between the merchant and periode. Be sure to validate this else a malicious actor can post payments into your system
+        
+        - in: path
+          name: merchantId
+          schema:
+            type: string
+          description: The id of the merchant
+          required: true
+
+        - in: path
+          name: productId
+          schema:
+            type: string
+          description: The id of the subscription
+          required: true
+
+        - in: path
+          name: subscriptionId
+          schema:
+            type: string
+          description: The id of the subscription
+          required: true
+
+      
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/updateSubscription'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/updateSubscriptionResponse'
+                
+  /merchants/{merchantId}/products/{productId}/subscriptions/{subscriptionId}/stop:
+    put:
+      summary: stop subscription
+      parameters:
+        - in: header
+          name: shared_secret
+          schema:
+            type: string
+          required: true      
+          description: The shared secret between the merchant and periode. Be sure to validate this else a malicious actor can post payments into your system
+        
+        - in: path
+          name: merchantId
+          schema:
+            type: string
+          description: The id of the merchant
+          required: true
+
+        - in: path
+          name: productId
+          schema:
+            type: string
+          description: The id of the subscription
+          required: true
+
+        - in: path
+          name: subscriptionId
+          schema:
+            type: string
+          description: The id of the subscription
+          required: true
+
+     
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/stopSubscriptionResponse'
        
   /<<merchant_defined_url>>:
     post:
@@ -182,21 +342,77 @@ paths:
 
 components:
   schemas:
-    singlePayment:
+    stopSubscriptionResponse:
+      type: string
+    updateSubscriptionResponse:
       type: object
       properties:
-        productName:
+        redirectUrl: 
           type: string
-        productId:
+  
+    createSubscriptionResponse:
+      type: object
+      properties:
+        redirectUrl: 
           type: string
-        productDecription:
+        subscriptionId: 
           type: string
+        invoiceId: 
+          type: string
+            
+    createSubscription:
+      type: object
+      properties:
+        manifest:
+          type: object
+          properties:
+            id:
+              type: string
+            price:
+              type: number
+        amount: 
+          type: number
+        email:
+          type: string
+        checkedExtraFields:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              numberOfItems:
+                type: number
+        checkedRadioButton:
+          type: string
+        paymentMethodType:
+          type: string
+          enum: [VIPPS, STRIPE]
         merchantCustomerId:
           type: string
-        status:
+        signupRedirectUrl:
           type: string
-          enum: [PAID]
-
+          
+    updateSubscription:
+      type: object
+      properties:
+        redirectUri: 
+          type: string
+        checkedExtraFields:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              numberOfItems:
+                type: number
+        checkedRadioButton:
+          type: string
+        updateTime:
+          type: string
+          enum: [NOw, NEXT_PAYMENT_DATE]
+          
     subscription:
       type: object
       properties:
@@ -217,10 +433,8 @@ components:
         subscriptionStatus:
           type: string
           enum: [ACTIVE, STOPPED]
-
         tags:
           type: object
-        
         customer:
           type: object
           properties:
@@ -234,15 +448,15 @@ components:
               type: string
             email:
               type: string
-          address:
-            type: object
-            properties:
-              region:
-                type: string
-              postalCode:
-                type: string
-              street:
-                type: string
+            address:
+              type: object
+              properties:
+                region:
+                  type: string
+                postalCode:
+                  type: string
+                street:
+                  type: string
         activeItems:
           type: array
           items:
