@@ -5,42 +5,57 @@ info:
     The API for customers who want create their own UI, but still use Period as a payment machine.
     The poeple wanting to integrate with this API are called merchants in this text
     </br>
-
-    Prerequisites:
-    </br>
-    1. Sign up at periode.no  https://periode.no/bli-kunde     </br>
-    2. Merchant creates a product in periodes UI portal and receives their unique periode url for initiating a purchase.  (minside.periode.no/signup/{productId})     </br>
-      2.a (Optional) Add a webhook url to the product so all payments and state changes are POSTED to your server
-    3. 
-
-    I will let Periode manage the UI for letting users signup and stop the agreement: (E.g. users can log into periode)
     </br>
 
-    3. Merchant creates a purchase flow and redirects minside.periode.no/{productId} .     </br>
+    <b> Prerequisites: </b> 
+    </br>
+      1. Sign up at periode.no  https://periode.no/bli-kunde     </br>
+      2. Merchant creates a product in periodes UI portal and receives their unique periode url for initiating a purchase.  (minside.periode.no/signup/{productId})
+      </br>
+        a. (Optional) Add a webhook url to the product so all payments and state changes are POSTED to your server 
+        </br>
+        </br>
+      3. Retrieve your shared secret used in the x-api-header for all requests at the "instillinger@
+    
+    <b>
+     I will let Periode manage the UI for letting users signup and stop the agreement: (E.g. users can log into periode) </b>
+    </br>
+
+      3. Merchant creates a purchase flow and redirects minside.periode.no/{productId} .     </br>
 
          a. Without query params the customer will fill in requierd information in Periodes UI     </br>
 
          b. If the customer wants to own the UI the customer can be redirected with all requierd info as query params  </br>
-    4. Customer is redirected to Vipps or Stripe for payment     </br>
+      4. Customer is redirected to Vipps or Stripe for payment     </br>
 
-    5. On success Periode sends a POST call to merchant defined endpoint.     </br>
+      5. On success Periode sends a POST call to merchant defined endpoint.     </br>
 
-    6. Merchant returns 200 OK, on which periode redirects the customer to the merchants site     </br>
+      6. Merchant returns 200 OK, on which periode redirects the customer to the merchants site     </br>
 
-    7. Optional. Merchant polls /subscriptions endpoint to ensure all charges are accounted for (in case of donwtime during webhook calls)     </br>
+      7. Optional. Merchant polls /subscriptions endpoint to ensure all charges are accounted for (in case of donwtime during webhook calls)     </br>
 
-    8. End User can login to minside.periode.no to manage their subscription
+      8. End User can login to minside.periode.no to manage their subscription </br>
 
-    I have created my own UI and will only use the Periode API to initiate and stop subscriptions.
+    <b>
+    I have created my own UI and will only use the Periode API to initiate and stop subscriptions. 
+    </b>
     </br>
 
-    3. Merchant initiates a subscription by posting to /merchant/:merchantId/products/:productId/subscriptions
+      3. Merchant initiates a subscription by posting to /merchant/:merchantId/products/:productId/subscriptions
 
-    4. Periode responds with a vipps payment url that the merchant will redirect  the user to
+      4. Periode responds with a vipps payment url that the merchant will redirect  the user to
 
-    5. After successfull payment the users is redirected back to us, we send a webhook to you and
-      redirect the user to your site when you respond 200OK (which is after your database has been updated)
-    <
+      5. After successfull payment the users is redirected back to us, we send a webhook to you and
+      redirect the user to your site when you respond 200OK
+      
+    <b>
+    <a href="https://github.com/ohmpay/ohmpay.github.io/blob/main/merchantApi.postman_collection.json">
+    Postman Collection </a>
+    </b>
+    
+    >
+    
+    
 
 
      
