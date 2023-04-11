@@ -15,7 +15,7 @@ info:
         a. (Optional) Add a webhook url to the product so all payments and state changes are POSTED to your server 
         </br>
         </br>
-      3. Retrieve your shared secret used in the x-api-header for all requests at the "instillinger@
+      3. Retrieve your shared secret used in the x-api-header for all requests at the "instillinger" settings in merchant.periode.no
     
     <b>
      I will let Periode manage the UI for letting users signup and stop the agreement: (E.g. users can log into periode) </b>
