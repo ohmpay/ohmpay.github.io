@@ -15,7 +15,7 @@ info:
         a. (Optional) Add a webhook url to the product so all payments and state changes are POSTED to your server 
         </br>
         </br>
-      3. Retrieve your shared secret used in the x-api-header for all requests at the "instillinger" settings in merchant.periode.no
+      3. Retrieve your shared secret used in the x-api-key for all requests at the "instillinger" settings in merchant.periode.no
     
     <b>
      I will let Periode manage the UI for letting users signup and stop the agreement: (E.g. users can log into periode) </b>
@@ -66,10 +66,11 @@ servers:
   - url: https://europe-west1-periode-test.cloudfunctions.net/merchantApi
     description: The url of the merchant exposed part of periode
 
-
 paths:
   /minside.periode.no/signup/{productId}:
     get:
+      tags:
+        - "Subscription"
       summary: Get the signup page for the product
       parameters:
         - in: path
@@ -132,6 +133,8 @@ paths:
   
   /merchants/{merchantId}/products/{productId}/subscriptions/:
     get:
+      tags:
+        - "Subscription"
       summary: Get all subscriptions for this merchant
       parameters:
         - in: header
@@ -167,10 +170,12 @@ paths:
 
   /merchants/{merchantId}/products/{productId}/subscriptions/{subscriptionId}:
     get:
+      tags:
+        - "Subscription"
       summary: Get a single subscription by id
       parameters:
         - in: header
-          name: shared_secret
+          name: x-api-key
           schema:
             type: string
           required: true      
@@ -208,10 +213,12 @@ paths:
 
   /merchants/{merchantId}/products/{productId}/subscriptions:
     post:
+      tags:
+        - "Subscription"
       summary: Create a draft subscription
       parameters:
         - in: header
-          name: shared_secret
+          name: x-api-key
           schema:
             type: string
           required: true      
@@ -248,10 +255,12 @@ paths:
 
   /merchants/{merchantId}/products/{productId}/subscriptions/{subscriptionId}/update:
     put:
+      tags:
+        - "Subscription"
       summary: Update subscription
       parameters:
         - in: header
-          name: shared_secret
+          name: x-api-key
           schema:
             type: string
           required: true      
@@ -295,10 +304,12 @@ paths:
                 
   /merchants/{merchantId}/products/{productId}/subscriptions/{subscriptionId}/stop:
     put:
+      tags:
+        - "Subscription"
       summary: stop subscription
       parameters:
         - in: header
-          name: shared_secret
+          name: x-api-key
           schema:
             type: string
           required: true      
@@ -334,12 +345,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/stopSubscriptionResponse'
        
-  /<<merchant_defined_url>>:
+  /"merchant_defined_url":
     post:
+      tags:
+        - "Subscription"
       summary: Payment data posted to merchant on successful payment.
       parameters:
         - in: header
-          name: shared_secret
+          name: x-api-key
           schema:
             type: string
           required: true      
@@ -354,6 +367,71 @@ paths:
       responses:
         '200':
           description:  ok# status code
+          
+  /merchants/{merchantId}/singlePaymentProducts/{productId}/initiate:
+    post:
+      tags:
+        - "Single Payment"
+      summary: Initiate a single payment
+      parameters:
+        - in: header
+          name: x-api-key
+          schema:
+            type: string
+          required: true      
+          description: The shared secret between the merchant and periode. Be sure to validate this else a malicious actor can post payments into your system
+        
+        - in: path
+          name: merchantId
+          schema:
+            type: string
+          description: The id of the merchant
+          required: true
+
+        - in: path
+          name: productId
+          schema:
+            type: string
+          description: The id of the single payment product
+          required: true
+      
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/initiateSinglePayment'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/singlePaymentInitiateResponse'
+                
+  /"merchant_url":
+    post:
+      tags:
+        - "Single Payment"
+      summary: Payment data posted to merchant on successful payment.
+      parameters:
+        - in: header
+          name: x-api-key
+          schema:
+            type: string
+          required: true      
+          description: The shared secret between the merchant and periode. Be sure to validate this else a malicious actor can post payments into your system
+      
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/singlePayment'
+      responses:
+        '200':
+          description:  ok
+          
 
 components:
   schemas:
@@ -443,7 +521,7 @@ components:
           type: string
         periodeCustomerId:
           type: string
-        expireAt:
+        expireDate:
           type: string
         subscriptionStatus:
           type: string
@@ -545,7 +623,7 @@ components:
         productId: 123XDGDF
         productDescription: Naf sykkelregister
         merchantCustomerId: some_naf_id
-        expireAt: 2023-10-02
+        expireDate: 2023-10-02
         periodeCustomerId: DSFCSDF112
         subscriptionStatus: ACTIVE
         subscriptionId: ASDADS
@@ -573,4 +651,30 @@ components:
             chargeDate: "2022-05-15", isInitialCharge: true, status: CHARGED, currency: NOK, totalAmount: 87000
           }
           }]
-          
+    initiateSinglePayment: 
+      type: object
+      properties:
+        merchantCustomerId:
+          type: string
+        buyerEmail:
+          type: string
+    singlePaymentInitiateResponse:
+      type: object
+      properties:
+        paymentUrl: 
+          type: string  
+    singlePayment:
+      type: object 
+      properties:
+        productId:
+          type: string
+        merchantCustomerId:
+          type: string
+        paymentId: 
+          type: string
+        status: 
+          type: string
+        buyerEmail:
+          type: string
+
+      
