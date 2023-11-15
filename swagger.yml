@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Periode Api
-  description: > 
+  description: >
     The API for customers who want create their own UI, but still use Period as a payment machine.
     The poeple wanting to integrate with this API are called merchants in this text
     </br>
@@ -16,7 +16,7 @@ info:
         </br>
         </br>
       3. Retrieve your shared secret used in the x-api-key for all requests at the "instillinger" settings in merchant.periode.no
-    
+
     <b>
      I will let Periode manage the UI for letting users signup and stop the agreement: (E.g. users can log into periode) </b>
     </br>
@@ -52,13 +52,9 @@ info:
     <a href="https://github.com/ohmpay/ohmpay.github.io/blob/main/merchantApi.postman_collection.json">
     Postman Collection </a>
     </b>
-    
+
     >
-    
-    
 
-
-     
   version: 0.0.1
 servers:
   - url: https://europe-west1-periode-prod.cloudfunctions.net/merchantApi
@@ -76,7 +72,7 @@ paths:
         - in: path
           name: productId
           schema:
-                type: string
+            type: string
           required: true
 
           description: The unique id of this product
@@ -93,7 +89,7 @@ paths:
         - in: query
           name: webhook_uri
           schema:
-            type: string 
+            type: string
           description: url encoded uri where you want to receive the backend to backend webhook on subscription state changes
         - in: query
           name: email
@@ -120,7 +116,7 @@ paths:
           name: auto_submit
           schema:
             type: boolean
-          description: Whether periode should redirect the customer directly to stripe/vipps for payments 
+          description: Whether periode should redirect the customer directly to stripe/vipps for payments
         - in: query
           name: tag_*
           schema:
@@ -128,9 +124,9 @@ paths:
           description: Any number of custom tags you want to have on the subscription on the form tag_name=value
 
       responses:
-        '200':
+        "200":
           description: Successful response
-  
+
   /merchants/{merchantId}/products/{productId}/subscriptions/:
     get:
       tags:
@@ -141,7 +137,7 @@ paths:
           name: x-api-key
           schema:
             type: string
-          required: true      
+          required: true
           description: The shared secret between the merchant and periode. Be sure to validate this else a malicious actor can post payments into your system
 
         - in: path
@@ -150,7 +146,7 @@ paths:
             type: string
           description: The id of the merchant
           required: true
-          
+
         - in: path
           name: productId
           schema:
@@ -159,14 +155,14 @@ paths:
           required: true
 
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/subscription'
+                type: array
+                items:
+                  $ref: "#/components/schemas/subscription"
 
   /merchants/{merchantId}/products/{productId}/subscriptions/{subscriptionId}:
     get:
@@ -178,9 +174,9 @@ paths:
           name: x-api-key
           schema:
             type: string
-          required: true      
+          required: true
           description: The shared secret between the merchant and periode. Be sure to validate this else a malicious actor can post payments into your system
-        
+
         - in: path
           name: merchantId
           schema:
@@ -201,15 +197,14 @@ paths:
             type: string
           description: The id of the subscription
           required: true
-      
+
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/subscription'
-
+                $ref: "#/components/schemas/subscription"
 
   /merchants/{merchantId}/products/{productId}/subscriptions:
     post:
@@ -221,9 +216,9 @@ paths:
           name: x-api-key
           schema:
             type: string
-          required: true      
+          required: true
           description: The shared secret between the merchant and periode. Be sure to validate this else a malicious actor can post payments into your system
-        
+
         - in: path
           name: merchantId
           schema:
@@ -237,24 +232,23 @@ paths:
             type: string
           description: The id of the subscription
           required: true
-      
+
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/createSubscription'
+              $ref: "#/components/schemas/createSubscription"
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/createSubscriptionResponse'
-                
+                $ref: "#/components/schemas/createSubscriptionResponse"
 
-  /merchants/{merchantId}/products/{productId}/subscriptions/{subscriptionId}/update:
-    put:
+  ? /merchants/{merchantId}/products/{productId}/subscriptions/{subscriptionId}/update
+  : put:
       tags:
         - "Subscription"
       summary: Update subscription
@@ -263,9 +257,9 @@ paths:
           name: x-api-key
           schema:
             type: string
-          required: true      
+          required: true
           description: The shared secret between the merchant and periode. Be sure to validate this else a malicious actor can post payments into your system
-        
+
         - in: path
           name: merchantId
           schema:
@@ -287,23 +281,22 @@ paths:
           description: The id of the subscription
           required: true
 
-      
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/updateSubscription'
+              $ref: "#/components/schemas/updateSubscription"
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/updateSubscriptionResponse'
-                
-  /merchants/{merchantId}/products/{productId}/subscriptions/{subscriptionId}/stop:
-    put:
+                $ref: "#/components/schemas/updateSubscriptionResponse"
+
+  ? /merchants/{merchantId}/products/{productId}/subscriptions/{subscriptionId}/stop
+  : put:
       tags:
         - "Subscription"
       summary: stop subscription
@@ -312,9 +305,9 @@ paths:
           name: x-api-key
           schema:
             type: string
-          required: true      
+          required: true
           description: The shared secret between the merchant and periode. Be sure to validate this else a malicious actor can post payments into your system
-        
+
         - in: path
           name: merchantId
           schema:
@@ -336,15 +329,14 @@ paths:
           description: The id of the subscription
           required: true
 
-     
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/stopSubscriptionResponse'
-       
+                $ref: "#/components/schemas/stopSubscriptionResponse"
+
   /"merchant_defined_url":
     post:
       tags:
@@ -355,19 +347,19 @@ paths:
           name: x-api-key
           schema:
             type: string
-          required: true      
+          required: true
           description: The shared secret between the merchant and periode. Be sure to validate this else a malicious actor can post payments into your system
-      
+
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/subscription'
+              $ref: "#/components/schemas/subscription"
       responses:
-        '200':
-          description:  ok# status code
-          
+        "200":
+          description: ok# status code
+
   /merchants/{merchantId}/singlePaymentProducts/{productId}/initiate:
     post:
       tags:
@@ -378,9 +370,9 @@ paths:
           name: x-api-key
           schema:
             type: string
-          required: true      
+          required: true
           description: The shared secret between the merchant and periode. Be sure to validate this else a malicious actor can post payments into your system
-        
+
         - in: path
           name: merchantId
           schema:
@@ -394,21 +386,21 @@ paths:
             type: string
           description: The id of the single payment product
           required: true
-      
+
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/initiateSinglePayment'
+              $ref: "#/components/schemas/initiateSinglePayment"
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/singlePaymentInitiateResponse'
-                
+                $ref: "#/components/schemas/singlePaymentInitiateResponse"
+
   /"merchant_url":
     post:
       tags:
@@ -419,44 +411,54 @@ paths:
           name: x-api-key
           schema:
             type: string
-          required: true      
+          required: true
           description: The shared secret between the merchant and periode. Be sure to validate this else a malicious actor can post payments into your system
-      
+
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/singlePayment'
+              $ref: "#/components/schemas/singlePayment"
       responses:
-        '200':
-          description:  ok
-          
+        "200":
+          description: ok
 
 components:
   schemas:
+    firstChargePriceOverride:
+      type: array
+      items:
+        type: object
+        properties:
+          description:
+            type: string
+          vat:
+            type: string
+          amount:
+            type: integer
     stopSubscriptionResponse:
       type: string
     updateSubscriptionResponse:
       type: object
       properties:
-        redirectUrl: 
+        redirectUrl:
           type: string
-  
+
     createSubscriptionResponse:
       type: object
       properties:
-        redirectUrl: 
+        redirectUrl:
           type: string
-        subscriptionId: 
+        subscriptionId:
           type: string
-        invoiceId: 
+        invoiceId:
           type: string
-            
+
     createSubscription:
       type: object
       properties:
-        amount: 
+        amount:
           type: number
         email:
           type: string
@@ -478,11 +480,13 @@ components:
           type: string
         signupRedirectUrl:
           type: string
-          
+        firstChargePriceOverride:
+          $ref: "#/components/schemas/firstChargePriceOverride"
+
     updateSubscription:
       type: object
       properties:
-        redirectUri: 
+        redirectUri:
           type: string
         checkedExtraFields:
           type: array
@@ -498,7 +502,7 @@ components:
         updateTime:
           type: string
           enum: [NOw, NEXT_PAYMENT_DATE]
-          
+
     subscription:
       type: object
       properties:
@@ -524,9 +528,9 @@ components:
         customer:
           type: object
           properties:
-            givenName: 
+            givenName:
               type: string
-            familyName: 
+            familyName:
               type: string
             name:
               type: string
@@ -556,25 +560,9 @@ components:
                 type: integer
               type:
                 type: string
-                enum: [checkbox, radioButton, baseItem, firstChargePriceOverride]
-              
-              firstChargePriceOverrideData:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    description: 
-                      type: string
-                    vat: 
-                      type: string
-                    amount: 
-                      type: integer
-                  
+                enum:
+                  [checkbox, radioButton, baseItem, firstChargePriceOverride]
 
-
-              
-
-        
         chargeLog:
           type: array
           items:
@@ -593,10 +581,13 @@ components:
                       type: string
                     amount:
                       type: integer
+
+                    firstChargePriceOverride:
+                      $ref: "#/components/schemas/firstChargePriceOverride"
                     type:
                       type: string
                       enum: [checkbox, radioButton, baseItem]
-                
+
               charge:
                 type: object
                 properties:
@@ -606,7 +597,7 @@ components:
                   chargeType:
                     type: string
                     enum: [Recurring, extraCharge]
-                  chargeId: 
+                  chargeId:
                     type: string
                   paymentIntentId:
                     type: string
@@ -627,7 +618,13 @@ components:
                     type: string
                   status:
                     type: string
-                    enum: [CHARGED, REFUNDEND, FAILED. CANCELLED, PARTIALLY_REFUNDED]
+                    enum:
+                      [
+                        CHARGED,
+                        REFUNDEND,
+                        FAILED. CANCELLED,
+                        PARTIALLY_REFUNDED,
+                      ]
       example:
         productName: Naf
         productId: 123XDGDF
@@ -650,18 +647,80 @@ components:
             city: oslo
             postalcode: 0650
             street: jens bjelkes gate 6
-        
+
         activeItems:
-          [{type: baseItem, description: naf sykkel base, amount: 29900, id: invoice.manifest.id}, {type: checkbox, description: naf veihjelp, amount: 59900, id: dsfdsf}, {type: radioButton, id: 1213213, description: 8 bikes, amount: 9900}, {type: "firstChargePriceOverride", amount: 3000, firstChargePriceOverrideData: [{amount: 10000, description:: "Base subscription product", vat: "10"},{amount: 20000, description: "Vitamine C capsule", vat: "25"}]}]
-        chargeLog: [{
-          items: [{type: baseItem, description: naf sykkel base, amount: 29900, id: invoice.manifest.id}, {type: checkbox, description: naf veihjelp, amount: 59900, id: dsfdsf}, {type: radioButton, id: 1213213, description: 8 bikes, amount: 9900}],
-          id: 233FD,
-          charge:  {type: VIPPS, 
-            chargeType: Recurring,
-            chargeDate: "2022-05-15", isInitialCharge: true, status: CHARGED, currency: NOK, totalAmount: 87000
-          }
-          }]
-    initiateSinglePayment: 
+          [
+            {
+              type: baseItem,
+              firstChargePriceOverride:
+                [
+                  {
+                    amount: 10000,
+                    description:: "Base subscription product",
+                    vat: "10",
+                  },
+                  {
+                    amount: 20000,
+                    description: "Vitamine C capsule",
+                    vat: "25",
+                  },
+                ],
+              description: naf sykkel base,
+              amount: 29900,
+              id: invoice.manifest.id,
+            },
+            {
+              type: checkbox,
+              description: naf veihjelp,
+              amount: 59900,
+              id: dsfdsf,
+            },
+            {
+              type: radioButton,
+              id: 1213213,
+              description: 8 bikes,
+              amount: 9900,
+            },
+            { type: "firstChargePriceOverride", amount: 3000 },
+          ]
+        chargeLog:
+          [
+            {
+              items:
+                [
+                  {
+                    type: baseItem,
+                    description: naf sykkel base,
+                    amount: 29900,
+                    id: invoice.manifest.id,
+                  },
+                  {
+                    type: checkbox,
+                    description: naf veihjelp,
+                    amount: 59900,
+                    id: dsfdsf,
+                  },
+                  {
+                    type: radioButton,
+                    id: 1213213,
+                    description: 8 bikes,
+                    amount: 9900,
+                  },
+                ],
+              id: 233FD,
+              charge:
+                {
+                  type: VIPPS,
+                  chargeType: Recurring,
+                  chargeDate: "2022-05-15",
+                  isInitialCharge: true,
+                  status: CHARGED,
+                  currency: NOK,
+                  totalAmount: 87000,
+                },
+            },
+          ]
+    initiateSinglePayment:
       type: object
       properties:
         merchantCustomerId:
@@ -671,20 +730,18 @@ components:
     singlePaymentInitiateResponse:
       type: object
       properties:
-        paymentUrl: 
-          type: string  
+        paymentUrl:
+          type: string
     singlePayment:
-      type: object 
+      type: object
       properties:
         productId:
           type: string
         merchantCustomerId:
           type: string
-        paymentId: 
+        paymentId:
           type: string
-        status: 
+        status:
           type: string
         buyerEmail:
           type: string
-
-      
