@@ -456,13 +456,6 @@ components:
     createSubscription:
       type: object
       properties:
-        manifest:
-          type: object
-          properties:
-            id:
-              type: string
-            price:
-              type: number
         amount: 
           type: number
         email:
@@ -563,7 +556,24 @@ components:
                 type: integer
               type:
                 type: string
-                enum: [checkbox, radioButton, baseItem]
+                enum: [checkbox, radioButton, baseItem, firstChargePriceOverride]
+              
+              firstChargePriceOverrideData:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    description: 
+                      type: string
+                    vat: 
+                      type: string
+                    amount: 
+                      type: integer
+                  
+
+
+              
+
         
         chargeLog:
           type: array
@@ -642,7 +652,7 @@ components:
             street: jens bjelkes gate 6
         
         activeItems:
-          [{type: baseItem, description: naf sykkel base, amount: 29900, id: invoice.manifest.id}, {type: checkbox, description: naf veihjelp, amount: 59900, id: dsfdsf}, {type: radioButton, id: 1213213, description: 8 bikes, amount: 9900}]
+          [{type: baseItem, description: naf sykkel base, amount: 29900, id: invoice.manifest.id}, {type: checkbox, description: naf veihjelp, amount: 59900, id: dsfdsf}, {type: radioButton, id: 1213213, description: 8 bikes, amount: 9900}, {type: "firstChargePriceOverride", amount: 3000, firstChargePriceOverrideData: [{amount: 10000, description:: "Base subscription product", vat: "10"},{amount: 20000, description: "Vitamine C capsule", vat: "25"}]}]
         chargeLog: [{
           items: [{type: baseItem, description: naf sykkel base, amount: 29900, id: invoice.manifest.id}, {type: checkbox, description: naf veihjelp, amount: 59900, id: dsfdsf}, {type: radioButton, id: 1213213, description: 8 bikes, amount: 9900}],
           id: 233FD,
