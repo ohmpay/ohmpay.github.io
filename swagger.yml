@@ -458,8 +458,6 @@ components:
     createSubscription:
       type: object
       properties:
-        amount:
-          type: number
         email:
           type: string
         checkedExtraFields:
