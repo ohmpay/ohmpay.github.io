@@ -735,6 +735,8 @@ components:
       properties:
         productId:
           type: string
+        amount:
+          type: integer
         merchantCustomerId:
           type: string
         paymentId:
