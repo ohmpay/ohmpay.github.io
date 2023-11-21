@@ -730,6 +730,8 @@ components:
       properties:
         paymentUrl:
           type: string
+        paymentId:
+          type: string
     singlePayment:
       type: object
       properties:
