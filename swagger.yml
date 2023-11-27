@@ -247,8 +247,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/createSubscriptionResponse"
 
-  ? /merchants/{merchantId}/products/{productId}/subscriptions/{subscriptionId}/update
-  : put:
+  /merchants/{merchantId}/products/{productId}/subscriptions/{subscriptionId}/update:
+    put:
       tags:
         - "Subscription"
       summary: Update subscription
@@ -295,8 +295,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/updateSubscriptionResponse"
 
-  ? /merchants/{merchantId}/products/{productId}/subscriptions/{subscriptionId}/stop
-  : put:
+  /merchants/{merchantId}/products/{productId}/subscriptions/{subscriptionId}/stop:
+    put:
       tags:
         - "Subscription"
       summary: stop subscription
@@ -360,11 +360,69 @@ paths:
         "200":
           description: ok# status code
 
+          
+  /merchants/{merchantId}/checkout:
+    post:
+      tags:
+        - "Single Payment Generic Checkout"
+      summary: Initiate a generic single payment
+      parameters:
+        - in: header
+          name: x-api-key
+          schema:
+            type: string
+          required: true
+          description: The shared secret between the merchant and periode. Be sure to validate this else a malicious actor can post payments into your system
+
+        - in: path
+          name: merchantId
+          schema:
+            type: string
+          description: The id of the merchant
+          required: true
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/createCheckout"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/singlePaymentInitiateResponse"
+
+  /"merchant_url":
+    post:
+      tags:
+        - "Single Payment Product"
+      summary: Payment data posted to merchant on successful payment.
+      parameters:
+        - in: header
+          name: x-api-key
+          schema:
+            type: string
+          required: true
+          description: The shared secret between the merchant and periode. Be sure to validate this else a malicious actor can post payments into your system
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/singlePayment"
+      responses:
+        "200":
+          description: ok
+
   /merchants/{merchantId}/singlePaymentProducts/{productId}/initiate:
     post:
       tags:
-        - "Single Payment"
-      summary: Initiate a single payment
+        - "Single Payment Product"
+      summary: Initiate a single payment on a product defined in the portal
       parameters:
         - in: header
           name: x-api-key
@@ -401,10 +459,10 @@ paths:
               schema:
                 $ref: "#/components/schemas/singlePaymentInitiateResponse"
 
-  /"merchant_url":
+  /"webhook_url":
     post:
       tags:
-        - "Single Payment"
+        - "Single Payment Generic Checkout"
       summary: Payment data posted to merchant on successful payment.
       parameters:
         - in: header
@@ -419,13 +477,67 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/singlePayment"
+              $ref: "#/components/schemas/checkoutWebhook"
       responses:
         "200":
           description: ok
 
 components:
   schemas:
+    genericPurchaseItem:
+      type: object
+      properties:
+        id:
+          type: string
+        description:
+          type: string
+        amount:
+          type: integer
+        vat:
+          type: string
+        numberOfItems:
+          type: integer
+    checkoutWebhook:
+      type: object
+      properties:
+        paymentId:
+          type: string
+        amount:
+          type: integer
+        merchantCustomerId:
+          type: string
+        status:
+          type: string
+          enum: [PAID]
+        buyerEmail:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/genericPurchaseItem"
+    createCheckout:
+      type: object
+      properties:
+        merchantCustomerId:
+          type: string
+        type:
+          type: string
+          enum: [genericPurchase]
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/genericPurchaseItem"
+        paymentName:
+          type: string
+        paymentDescription:
+          type: string
+        buyerEmail:
+          type: string
+        webhookUrl:
+          type: string
+        successRedirectUrl:
+          type: string
+
     firstChargePriceOverride:
       type: array
       items:
@@ -746,4 +858,6 @@ components:
         status:
           type: string
         buyerEmail:
+          type: string
+        successRedirectUrl:
           type: string
