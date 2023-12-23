@@ -63,6 +63,28 @@ servers:
     description: The url of the merchant exposed part of periode
 
 paths:
+  /minside.periode.no/merchants/{merchantId}/products:
+    post:
+      tags:
+        - "Product"
+      summary: Create a new product that can have multiple subscriptions
+      
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/createProductRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createProductResponse"
+        "400":
+          description: Bad request
+
   /minside.periode.no/signup/{productId}:
     get:
       tags:
@@ -556,6 +578,109 @@ components:
       properties:
         redirectUrl:
           type: string
+    
+    createProductRequest:
+      type: object
+      properties:
+        interval:
+          type: string
+          enum: ["MONTH", "YEAR"]
+        intervalCount:
+          type: integer
+        scopes:
+          type: array
+          items:
+            type: string
+            enum: [email, phonenumber, address, birthdate, name]
+        price:
+          type: number
+        mva:
+          type: string
+          enum: ["0%", "5%", "12%", "15%", "25%"]
+          nullable: true
+        sendReciept:
+          type: boolean
+          nullable: true
+        firstChargePrice:
+          type: number
+          nullable: true
+        productDescription:
+          type: string
+        extraInfo:
+          type: string
+          nullable: true
+        productName:
+          type: string
+        anchorDate:
+          type: number
+          nullable: true
+        anchorMonth:
+          type: number
+          nullable: true
+        cancelledLink:
+          type: string
+          nullable: true
+        createdSuccessLink:
+          type: string
+          nullable: true
+        paymentWebhookUrl:
+          type: string
+          nullable: true
+        supportedPaymentMethods:
+          type: array
+          items:
+            type: string
+            enum: [VIPPS, STRIPE]
+          nullable: true
+        commitmentMonths:
+          type: number
+          nullable: true
+        createDraftSubscription:
+          type: object
+          properties:
+            paymentMethodType:
+              type: string
+              enum: [VIPPS, STRIPE]
+            merchantCustomerId:
+              type: string
+            signupRedirectUrl:
+              type: string
+
+      required:
+        - interval
+        - intervalCount
+        - scopes
+        - price
+        - productDescription
+        - productName
+      example:
+        interval: MONTH
+        intervalCount: 1
+        scopes: [email, phonenumber, address, birthdate, name]
+        price: 29900
+        mva: "25%"
+        sendReciept: true
+        firstChargePrice: 19900
+        productDescription: membership in the best sauna in town
+        extraInfo: "Includes: 1 Membership; 2 towels; and a magazine sent to the frontdoor"
+        productName: Sauna membership
+        paymentWebhookUrl: https://mysite.com/periode/wevhook
+        supportedPaymentMethods: [VIPPS]
+        createDraftSubscription:
+          paymentMethodType: VIPPS
+          merchantCustomerId: mysite_customer_id
+          signupRedirectUrl: https://mysite.com/payment-callback
+
+    createProductResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        draftSubscription:
+          $ref: "#/components/schemas/createSubscriptionResponse"
+      required:
+        - id
+      
 
     createSubscriptionResponse:
       type: object
