@@ -587,11 +587,6 @@ components:
           enum: ["MONTH", "YEAR"]
         intervalCount:
           type: integer
-        scopes:
-          type: array
-          items:
-            type: string
-            enum: [email, phonenumber, address, birthdate, name]
         price:
           type: number
         mva:
@@ -645,18 +640,18 @@ components:
               type: string
             signupRedirectUrl:
               type: string
+            email:
+              type: string
 
       required:
         - interval
         - intervalCount
-        - scopes
         - price
         - productDescription
         - productName
       example:
         interval: MONTH
         intervalCount: 1
-        scopes: [email, phonenumber, address, birthdate, name]
         price: 29900
         mva: "25%"
         sendReciept: true
@@ -670,6 +665,7 @@ components:
           paymentMethodType: VIPPS
           merchantCustomerId: mysite_customer_id
           signupRedirectUrl: https://mysite.com/payment-callback
+          email: "aksel@periode.no"
 
     createProductResponse:
       type: object
