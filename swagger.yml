@@ -104,7 +104,7 @@ paths:
             schema:
               $ref: "#/components/schemas/updateProductRequest"
       responses:
-        "200":
+        "204":
           description: OK
         "400":
           description: Bad request
@@ -781,6 +781,8 @@ components:
         productId:
           type: string
         productDecription:
+          type: string
+        productExtraInfo:
           type: string
         merchantCustomerId:
           type: string
