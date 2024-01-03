@@ -84,6 +84,30 @@ paths:
                 $ref: "#/components/schemas/createProductResponse"
         "400":
           description: Bad request
+          
+    put:
+      tags:
+        - "Product"
+      summary: update a product that can have multiple subs. The subscriptions will be updated with the new price
+      parameters:
+        - in: path
+          name: productId
+          schema:
+            type: string
+          description: The id of the product
+          required: true
+      
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/updateProductRequest"
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad request
 
   /minside.periode.no/signup/{productId}:
     get:
@@ -579,6 +603,19 @@ components:
         redirectUrl:
           type: string
     
+    
+    updateProductRequest:
+      type: object
+      properties:
+        price:
+          type: number
+        productDescription:
+          type: string
+        extraInfo:
+          type: string
+          nullable: true
+        productName:
+          type: string
     createProductRequest:
       type: object
       properties:
@@ -675,8 +712,8 @@ components:
         draftSubscription:
           $ref: "#/components/schemas/createSubscriptionResponse"
       required:
-        - id
-      
+          - id
+        
 
     createSubscriptionResponse:
       type: object
