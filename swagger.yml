@@ -68,7 +68,7 @@ paths:
       tags:
         - "Product"
       summary: Create a new product that can have multiple subscriptions
-      
+
       requestBody:
         required: true
         content:
@@ -84,7 +84,7 @@ paths:
                 $ref: "#/components/schemas/createProductResponse"
         "400":
           description: Bad request
-          
+
     put:
       tags:
         - "Product"
@@ -96,7 +96,7 @@ paths:
             type: string
           description: The id of the product
           required: true
-      
+
       requestBody:
         required: true
         content:
@@ -104,7 +104,7 @@ paths:
             schema:
               $ref: "#/components/schemas/updateProductRequest"
       responses:
-        "204":
+        "200":
           description: OK
         "400":
           description: Bad request
@@ -406,7 +406,6 @@ paths:
         "200":
           description: ok# status code
 
-          
   /merchants/{merchantId}/checkout:
     post:
       tags:
@@ -528,6 +527,109 @@ paths:
         "200":
           description: ok
 
+  /merchants/{id}/createBookingManifest:
+    post:
+      summary: Create a Booking Manifest
+      operationId: createBookingManifest
+      tags:
+        - Booking
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookingManifestRequest"
+            examples:
+              exampleRequest:
+                value:
+                  id: "123"
+                  name: "Summer Festival"
+                  description: "Annual summer music festival"
+                  vat: 0.25
+                  capacity: 500
+                  maxOrderSize: 10
+                  type: "event"
+                  generateDaysAhead: 30
+                  price: 50.00
+                  paymentType:
+                    - "STRIPE"
+                  supportDiscountCode: true
+                  startDate: "2024-06-15"
+                  resourceNames:
+                    - "Stage 1"
+                    - "Stage 2"
+                  receiptNames:
+                    - "Ticket"
+                    - "VIP Pass"
+                  refundType: "50-percent-money-or-100-percent-giftcard"
+                  closedDates:
+                    - "2024-07-01"
+                    - "2024-07-02"
+                  emailDetails: "info@summerfestival.com"
+                  endDate: "2024-06-20"
+                  termsAndConditionsUrl: "https://summerfestival.com/terms"
+                  publishNightly: false
+                  enabled: true
+                  contactPhoneNumber: "+1234567890"
+                  mapsUrl: "https://maps.google.com/?q=summer+festival"
+                  mapsDescription: "Festival Location"
+                  infoLink: "https://summerfestival.com/info"
+                  length: 480
+                  isFullDay: false
+                  schedule:
+                    - startTimes:
+                        - hour: 14
+                          minute: 30
+                          length: 60
+                          customCapacity: 200
+                          priceAdjustments: 10
+                          customLength: 120# <P
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+
+  /merchants/{id}/updateBookingManifest:
+    put:
+      summary: Update a Booking Manifest
+      operationId: updateBookingManifest
+      tags:
+        - Booking
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookingManifestRequest"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+
 components:
   schemas:
     genericPurchaseItem:
@@ -602,8 +704,7 @@ components:
       properties:
         redirectUrl:
           type: string
-    
-    
+
     updateProductRequest:
       type: object
       properties:
@@ -712,8 +813,7 @@ components:
         draftSubscription:
           $ref: "#/components/schemas/createSubscriptionResponse"
       required:
-          - id
-        
+        - id
 
     createSubscriptionResponse:
       type: object
@@ -781,8 +881,6 @@ components:
         productId:
           type: string
         productDecription:
-          type: string
-        productExtraInfo:
           type: string
         merchantCustomerId:
           type: string
@@ -1021,3 +1119,156 @@ components:
           type: string
         successRedirectUrl:
           type: string
+    BookingManifestRequest:
+      type: object
+      example:
+      required:
+        - name
+        - description
+        - vat
+        - capacity
+        - maxOrderSize
+        - type
+        - generateDaysAhead
+        - price
+        - paymentType
+        - supportDiscountCode
+        - startDate
+        - resourceNames
+        - receiptNames
+        - refundType
+        - closedDates
+        - emailDetails
+        - termsAndConditionsUrl
+        - publishNightly
+        - enabled
+        - contactPhoneNumber
+        - mapsUrl
+        - mapsDescription
+        - infoLink
+        - length
+        - isFullDay
+        - schedule
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        vat:
+          type: number
+          minimum: 0.0
+          maximum: 1.0
+        capacity:
+          type: number
+          format: int32
+        maxOrderSize:
+          type: number
+          format: int32
+        type:
+          type: string
+          enum: [event, recurring, ticket, open-event]
+        generateDaysAhead:
+          type: number
+          format: int32
+        price:
+          type: number
+        paymentType:
+          type: array
+          items:
+            type: string
+            enum: [VIPPS, STRIPE]
+        supportDiscountCode:
+          type: boolean
+        startDate:
+          type: string
+        resourceNames:
+          type: array
+          items:
+            type: string
+          minItems: 2
+          maxItems: 2
+        receiptNames:
+          type: array
+          items:
+            type: string
+          minItems: 2
+          maxItems: 2
+        refundType:
+          type: string
+          enum:
+            [
+              money,
+              only-giftCard,
+              50-percent-money-or-100-percent-giftcard,
+              none,
+            ]
+        closedDates:
+          type: array
+          items:
+            type: string
+            maxLength: 10
+        emailDetails:
+          type: string
+        endDate:
+          type: string
+        termsAndConditionsUrl:
+          type: string
+        publishNightly:
+          type: boolean
+        enabled:
+          type: boolean
+        contactPhoneNumber:
+          type: string
+        mapsUrl:
+          type: string
+        mapsDescription:
+          type: string
+        infoLink:
+          type: string
+        length:
+          type: number
+        isFullDay:
+          type: boolean
+        schedule:
+          type: array
+          items:
+            $ref: "#/components/schemas/ScheduleItem"
+          minItems: 7
+          maxItems: 7
+
+    ScheduleItem:
+      type: object
+      required:
+        - startTimes
+      properties:
+        startTimes:
+          type: array
+          items:
+            $ref: "#/components/schemas/StartTime"
+
+    StartTime:
+      type: object
+      required:
+        - hour
+        - minute
+        - length
+      properties:
+        hour:
+          type: number
+          format: int32
+          minimum: 0
+        minute:
+          type: number
+          format: int32
+          minimum: 0
+        length:
+          type: number
+          minimum: 0
+        customCapacity:
+          type: number
+        priceAdjustments:
+          type: number
+        customLength:
+          type: number
