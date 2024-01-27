@@ -601,7 +601,7 @@ paths:
                   id:
                     type: string
 
-  /merchants/{id}/updateBookingManifest:
+  /merchants/{id}/updateBookingManifest/{productId}:
     put:
       summary: Update a Booking Manifest
       operationId: updateBookingManifest
@@ -609,6 +609,11 @@ paths:
         - Booking
       parameters:
         - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: productId
           in: path
           required: true
           schema:
