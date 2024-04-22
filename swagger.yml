@@ -855,6 +855,19 @@ components:
           type: string
         firstChargePriceOverride:
           $ref: "#/components/schemas/firstChargePriceOverride"
+        discount:
+          type: object
+          properties:
+            type:
+              type: string
+              enum: [percentage, flatAmount]
+            amount: 
+              type: integer
+            expireDate:
+              type: string
+            scope:
+              type: string
+              enum: [baseProduct, baseAndExtraFields]
 
     updateSubscription:
       type: object
@@ -874,7 +887,20 @@ components:
           type: string
         updateTime:
           type: string
-          enum: [NOw, NEXT_PAYMENT_DATE]
+          enum: [NOW, NEXT_PAYMENT_DATE]
+        discount:
+          type: object
+          properties:
+            type:
+              type: string
+              enum: [percentage, flatAmount]
+            amount: 
+              type: integer
+            expireDate:
+              type: string
+            scope:
+              type: string
+              enum: [baseProduct, baseAndExtraFields]
 
     subscription:
       type: object
