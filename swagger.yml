@@ -855,6 +855,8 @@ components:
           type: string
         firstChargePriceOverride:
           $ref: "#/components/schemas/firstChargePriceOverride"
+        discountCode:
+          type: string
         discount:
           type: object
           properties:
@@ -924,6 +926,19 @@ components:
           enum: [ACTIVE, STOPPED]
         tags:
           type: object
+        discount:
+          type: object
+          properties:
+            type:
+              type: string
+              enum: [percentage, flatAmount]
+            amount: 
+              type: integer
+            expireDate:
+              type: string
+            scope:
+              type: string
+              enum: [baseProduct, baseAndExtraFields]
         customer:
           type: object
           properties:
