@@ -993,7 +993,7 @@ components:
                       type: string
                     description:
                       type: string
-                    amount:
+                    totalAmount:
                       type: integer
 
                     firstChargePriceOverride:
