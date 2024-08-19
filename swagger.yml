@@ -382,6 +382,48 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/stopSubscriptionResponse"
+  
+  /merchants/{merchantId}/products/{productId}/subscriptions/{subscriptionId}/reactivate:
+    put:
+      tags:
+        - "Subscription"
+      summary: reactivate subscription
+      parameters:
+        - in: header
+          name: x-api-key
+          schema:
+            type: string
+          required: true
+          description: The shared secret between the merchant and periode. Be sure to validate this else a malicious actor can post payments into your system
+
+        - in: path
+          name: merchantId
+          schema:
+            type: string
+          description: The id of the merchant
+          required: true
+
+        - in: path
+          name: productId
+          schema:
+            type: string
+          description: The id of the subscription
+          required: true
+
+        - in: path
+          name: subscriptionId
+          schema:
+            type: string
+          description: The id of the subscription
+          required: true
+
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/reactivateSubscriptionResponse"
 
   /"merchant_defined_url":
     post:
@@ -703,6 +745,8 @@ components:
           amount:
             type: integer
     stopSubscriptionResponse:
+      type: string
+    reactivateSubscriptionResponse:
       type: string
     updateSubscriptionResponse:
       type: object
