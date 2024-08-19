@@ -921,6 +921,10 @@ components:
           type: string
         expireDate:
           type: string
+        nextWebhookDate:
+          type: string
+        nextChargeDate:
+          type: string
         subscriptionStatus:
           type: string
           enum: [ACTIVE, STOPPED]
