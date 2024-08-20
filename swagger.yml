@@ -936,6 +936,8 @@ components:
         updateTime:
           type: string
           enum: [NOW, NEXT_PAYMENT_DATE]
+        discountCode:
+          type: string
         discount:
           type: object
           properties:
