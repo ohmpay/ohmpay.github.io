@@ -1026,6 +1026,22 @@ components:
                 type: string
                 enum:
                   [checkbox, radioButton, baseItem, firstChargePriceOverride]
+                  
+        nextChargeItems:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              description:
+                type: string
+              amount:
+                type: integer
+              type:
+                type: string
+                enum:
+                  [checkbox, radioButton, baseItem, firstChargePriceOverride]
 
         chargeLog:
           type: array
