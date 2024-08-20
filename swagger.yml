@@ -749,10 +749,12 @@ components:
     reactivateSubscriptionResponse:
       type: string
     updateSubscriptionResponse:
-      type: object
-      properties:
-        redirectUrl:
-          type: string
+     oneOf:
+      - type: object
+        properties:
+          redirectUrl:
+            type: string
+      - $ref: '#/components/schemas/subscription'
 
     updateProductRequest:
       type: object
